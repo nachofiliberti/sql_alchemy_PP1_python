@@ -1,0 +1,12 @@
+version: '3'
+#lista de servicios:
+services:
+  flask_app: #servicios app.
+    build: #lista de params
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "5005:5005"   #puerto que expone el contenedor y el otro el puerto host:5005 donde yo estoy viendo los datos
+    restart: always #en caso de error, reintenta.
+    volumes:
+      . :/SQL_ALCHEMY
