@@ -1,12 +1,25 @@
+#version de docker-compose
 version: '3'
-#lista de servicios:
+#Lista de servicios
 services:
-  flask_app: #servicios app.
-    build: #lista de params
+  flask_app: #servicios app
+    build:   #lista de params.
       context: .
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     ports:
-      - "5005:5005"   #puerto que expone el contenedor y el otro el puerto host:5005 donde yo estoy viendo los datos
-    restart: always #en caso de error, reintenta.
+      - "5005:5005" # puerto que expone el contenedor : puerto del host donde escuchamos.
+    # restart: always # En caso de error, reintenta.
     volumes:
-      . :/SQL_ALCHEMY
+      - .:/SQL_ALCHEMY
+    env_file:
+      - .env
+    depends_on:
+      -mysql_db
+    container_name: flask_app
+#sudo service mysql status
+#sudo service mysql stop 
+#status
+
+
+  mysql_db:
+    image: mysql:5.7

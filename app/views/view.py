@@ -37,6 +37,35 @@ from app.schemas.schema import (
     ProvinciaSchema,
     LocalidadSchema
 )
+from flask.views import MethodView
+
+#nuevo modo en vez de usar rutas implentamos una clase #PaisAPI que hereda MethodView
+# lo cual hay que importarlo y ahi dentro hacemos las peticiones (get,post)
+class PaisAPI(MethodView):
+    def get(self):
+        paises = Pais.query.all()
+        paises_schema = PaisSchema().dump(paises, many=True)
+        return jsonify(paises_schema)
+    
+    def post(self):
+        pais_json = PaisSchema().load(request.json)
+        nombre = pais_json.get("nombre")
+
+        nuevo_pais = Pais(nombre=nombre)
+        db.session.add(nuevo_pais)
+        db.session.commit()
+        return jsonify(Mensaje="METODO POST")
+    
+
+
+app.add_url_rule("/pais", view_func=PaisAPI.as_view("pais"))
+
+
+
+
+
+
+
 
 @app.route("/users")
 @jwt_required()
