@@ -41,11 +41,16 @@ from flask.views import MethodView
 
 #nuevo modo en vez de usar rutas implentamos una clase #PaisAPI que hereda MethodView
 # lo cual hay que importarlo y ahi dentro hacemos las peticiones (get,post)
+
 class PaisAPI(MethodView):
-    def get(self):
-        paises = Pais.query.all()
-        paises_schema = PaisSchema().dump(paises, many=True)
-        return jsonify(paises_schema)
+    def get(self, pais_id=None):
+        if pais_id is None:
+            paises = Pais.query.all()
+            resultado = PaisSchema().dump(paises, many=True)
+        else:
+            pais = Pais.query.get(pais_id)
+            resultado = PaisSchema().dump(pais)
+        return jsonify(resultado)
     
     def post(self):
         pais_json = PaisSchema().load(request.json)
@@ -54,11 +59,31 @@ class PaisAPI(MethodView):
         nuevo_pais = Pais(nombre=nombre)
         db.session.add(nuevo_pais)
         db.session.commit()
-        return jsonify(Mensaje="METODO POST")
+        return jsonify(PaisSchema().dump(nuevo_pais))
+    
+    def put(self, pais_id):
+        pais = Pais.query.get(pais_id)
+        pais_json = PaisSchema().load(request.json)
+        nombre = pais_json.get("nombre")
+        pais.nombre = nombre
+        
+        db.session.commit()
+        return jsonify(PaisSchema().dump())
+    
+    def delete(self, pais_id):
+        pais = Pais.query.get(pais_id)
+        db.session.delete(pais)
+        db.session.commit()
+        return jsonify(Mensaje="Borraste el Pais")
+
     
 
 
 app.add_url_rule("/pais", view_func=PaisAPI.as_view("pais"))
+app.add_url_rule(
+                "/pais/<pais_id>", 
+                view_func=PaisAPI.as_view("pais_por_id")
+                )
 
 
 
