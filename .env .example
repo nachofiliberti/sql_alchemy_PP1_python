@@ -1,2 +1,0 @@
-SQLALCHEMY_DATABASE_URI =mysql+pymysql://root:@localhost/alchemy
-JWT_SECRET_KEY="secret key"
